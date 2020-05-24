@@ -94,7 +94,6 @@ public class ActorController {
 	@ResponseBody
 	public MSG getactorbyid(@PathVariable("id") short id){
 		Actor a=actorservice.getActorByid(id);
-		System.out.println(a);
 		return new MSG("200",a);
 	}
 	
