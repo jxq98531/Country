@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.AddressMapper">
+	<resultMap type="po.Address" id="addressMap">
+        <id column="address_id" property="id" ></id>
+        <result column="district" property="district"/>
+        <result column="address" property="address"/>
+        <result column="last_update" property="last_update"/>
+    </resultMap>
+    
+	<select id="getAlladdresss" resultMap="addressMap">
+		select * from address
+	</select>
+	
+	<!-- 通常用set+if标签用于更新操作，避免前端没有上传的PO字段被置空 -->
+	<update id="updateAddressbyid" parameterType="po.Address">
+    update address
+    <set>
+      <if test="address != null">
+		  address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="district != null">
+		  district = #{district,jdbcType=VARCHAR},
+      </if>
+      <if test="last_update != null">
+        last_update = #{last_update,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where address_id = #{id,jdbcType=SMALLINT}
+  </update>
+  
+  	<!-- 当需要对表中的数据按照1到多个条件进行检索时，用where+if标签可以减少大量SQL -->
+  	<select id="selectAddressByName" resultMap="addressMap" parameterType="po.Address">
+	    select * from address
+		<where>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+		</where>
+	</select>
+  
+	<select id="getaddressbyid" resultMap="addressMap" parameterType="short">
+		select * from address where address_id=#{id} 
+	</select>
+	
+	<insert id="insertAddress" useGeneratedKeys="true" keyProperty="id" parameterType="po.Address">
+	  insert into address (address,district,last_update)
+	  values (#{address},#{district},#{last_update})
+	</insert>
+	
+	<delete id="delete" parameterType="short">
+		delete from address where address_id=#{id}
+	</delete>
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.FilmMapper">
+  <resultMap id="filmMap" type="po.Film">
+    <id column="film_id" property="id"></id>
+    <result column="title" property="title"/>
+    <result column="special_features" property="special_features"/>
+    <result column="last_update" property="last_update"/>
+    <result column="description" property="description"/>
+  </resultMap>
+
+  <select id="getAllfilms" resultMap="filmMap">
+    	select * from film
+    </select>
+
+  <update id="updateFilmbyid" parameterType="po.Film">
+    update film
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="special_features != null">
+        special_features = #{special_features,jdbcType=VARCHAR},
+      </if>
+
+      <if test="last_update != null">
+        last_update = #{last_update,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where film_id = #{id,jdbcType=SMALLINT}
+  </update>
+
+  <!-- 当需要对表中的数据按照1到多个条件进行检索时，用where+if标签可以减少大量SQL -->
+  <select id="selectFilmByName" resultMap="filmMap" parameterType="po.Film">
+    select * from film
+    <where>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+    </where>
+  </select>
+
+  <select id="getfilmbyid" resultMap="filmMap" parameterType="short">
+		select * from film where film_id=#{id}
+	</select>
+
+  <insert id="insertFilm" useGeneratedKeys="true" keyProperty="id" parameterType="po.Film">
+	  insert into film (title,description,special_features,last_update)
+	  values (#{title},#{description},#{special_features},#{last_update})
+	</insert>
+
+  <delete id="delete" parameterType="short">
+		delete from film where film_id=#{id}
+	</delete>
+</mapper>
+      

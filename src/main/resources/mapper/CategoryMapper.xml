@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.CategoryMapper">
+	<resultMap type="po.Category" id="categoryMap">
+        <id column="category_id" property="id" ></id>
+        <result column="name" property="name"/>
+        <result column="last_update" property="last_update"/>
+    </resultMap>
+    
+	<select id="getAllcategorys" resultMap="categoryMap">
+		select * from category
+	</select>
+	
+	<!-- 通常用set+if标签用于更新操作，避免前端没有上传的PO字段被置空 -->
+	<update id="updateCategorybyid" parameterType="po.Category">
+    update category
+    <set>
+      <if test="name != null">
+		  name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="last_update != null">
+        last_update = #{last_update,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where category_id = #{id,jdbcType=SMALLINT}
+  </update>
+  
+  	<!-- 当需要对表中的数据按照1到多个条件进行检索时，用where+if标签可以减少大量SQL -->
+  	<select id="selectCategoryByName" resultMap="categoryMap" parameterType="po.Category">
+	    select * from category
+	    <where>
+	        <if test="name != null">
+				name=#{name}
+	        </if>
+	    </where>
+	</select>
+  
+	<select id="getcategorybyid" resultMap="categoryMap" parameterType="short">
+		select * from category where category_id=#{id} 
+	</select>
+	
+	<insert id="insertCategory" useGeneratedKeys="true" keyProperty="id" parameterType="po.Category">
+	  insert into category (name,last_update)
+	  values (#{name},#{last_update})
+	</insert>
+	
+	<delete id="delete" parameterType="short">
+		delete from category where category_id=#{id}
+	</delete>
+</mapper>
